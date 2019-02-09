@@ -35,11 +35,10 @@ def get_token(html, attrib_name):
     Return value of first match for element with name attribute
     """
     soup = bs4.BeautifulSoup(html, 'html.parser')
-    res = soup.select("[name='{}']".format(attrib_name))
+    res = soup.select("[name={}]".format(attrib_name))
     if not res:
         raise KijijiApiException("Element with name attribute '{}' not found in html text.".format(attrib_name), html)
     return res[0]['value']
-
 
 def get_kj_data(html):
     """
@@ -100,6 +99,8 @@ class KijijiApi:
 	
         if not self.is_logged_in():
             raise KijijiApiException("Could not log in.", resp.text)
+        else:
+            print('User successfully logged in')
 
     def is_logged_in(self):
         """
@@ -146,7 +147,9 @@ class KijijiApi:
         """
         image_urls = []
         image_upload_url = 'https://www.kijiji.ca/p-upload-image.html'
+        img_count = 1
         for img_file in image_files:
+            print('Uploading {}'.format(img_count))
             for i in range(0, 3):
                 r = self.session.post(image_upload_url, files={'file': img_file}, headers={"X-Ebay-Box-Token": token})
                 r.raise_for_status()
@@ -168,8 +171,8 @@ class KijijiApi:
         'image_files' is a list of binary objects corresponding to images to upload
         """
         # Load ad posting page (arbitrary category)
-        resp = self.session.get('https://www.kijiji.ca/p-admarkt-post-ad.html?categoryId=15')
-
+        print('Going to post your ad..')
+        resp = self.session.get('https://www.kijiji.ca/p-change-location.html?categoryId=15&newLocationId=9003')
         # Get token required for upload
         m = re.search(r"initialXsrfToken: '(\S+)'", resp.text)
         if m:
@@ -184,7 +187,7 @@ class KijijiApi:
         # Retrieve XSRF tokens
         data['ca.kijiji.xsrf.token'] = get_token(resp.text, 'ca.kijiji.xsrf.token')
         data['postAdForm.fraudToken'] = get_token(resp.text, 'postAdForm.fraudToken')
-
+        print('Tokens obtained. Entering form data..')
         # Format ad data and check constraints
         data['postAdForm.description'] = data['postAdForm.description'].replace("\\n", "\n")
         title_len = len(data.get("postAdForm.title", ""))
@@ -194,6 +197,7 @@ class KijijiApi:
             raise KijijiApiException("Your ad title is too long! (max 64 chars)")
 
         # Upload the ad itself
+        print('Submitting ad..')
         new_ad_url = "https://www.kijiji.ca/p-submit-ad.html"
         resp = self.session.post(new_ad_url, data=data)
         resp.raise_for_status()
@@ -205,7 +209,7 @@ class KijijiApi:
 
         # Extract ad ID from response set-cookie
         ad_id = re.search('kjrva=(\d+)', resp.headers['Set-Cookie']).group(1)
-
+        print('Advertisement posted successfully. ID: {}'.format(ad_id))
         return ad_id
 
     def get_all_ads(self):

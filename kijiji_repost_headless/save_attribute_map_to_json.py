@@ -192,5 +192,5 @@ for category_id in all_categories:
 
     postAdAttributes.append(category_props)
 
-with open('kijiji_categories_attrs.json', 'w') as fp:
+with open('kijiji_categories_attrs_new.json', 'w') as fp:
     json.dump(postAdAttributes, fp)

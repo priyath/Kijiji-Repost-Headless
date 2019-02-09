@@ -32,17 +32,6 @@ def main():
     delete_parser.add_argument('id', type=str, help='id of the ad you wish to delete')
     delete_parser.set_defaults(function=delete_ad)
 
-    nuke_parser = subparsers.add_parser('nuke', help='delete all ads')
-    nuke_parser.set_defaults(function=nuke)
-
-    check_parser = subparsers.add_parser('check_ad', help='check if ad is active')
-    check_parser.add_argument('ad_file', type=str, help='.yml file containing ad details')
-    check_parser.set_defaults(function=check_ad)
-
-    repost_parser = subparsers.add_parser('repost', help='repost an existing ad')
-    repost_parser.add_argument('ad_file', type=str, help='.yml file containing ad details')
-    repost_parser.set_defaults(function=repost_ad)
-
     build_parser = subparsers.add_parser('build_ad', help='generates the item.yml file for a new ad')
     build_parser.set_defaults(function=generate_post_file)
 
@@ -77,9 +66,7 @@ def get_post_details(ad_file, api=None):
 
 
 def post_ad(args, api=None):
-    """
-    Post new ad
-    """
+    generator.run_program(args.ad_file)
     [data, image_files] = get_post_details(args.ad_file)
     get_username_if_needed(args, data)
 
@@ -91,13 +78,17 @@ def post_ad(args, api=None):
 
         if not api:
             api = kijiji_api.KijijiApi()
+            print('Authenticating user..')
             api.login(args.username, args.password)
         api.post_ad_using_data(data, image_files)
     if not check_ad(args):
+        print('Ad has been taken down :(')
         print("Failed ad post attempt #{}, giving up.".format(attempts))
+    else:
+        print('Ad is alive. Program will now exit.')
 
 
-def show_ads(args, api=None):
+def show_ads(args, api=None, ad=None):
     """
     Print list of all ads
     """
@@ -125,40 +116,11 @@ def delete_ad(args, api=None):
     api.delete_ad(args.id)
 
 
-def repost_ad(args, api=None):
-    """
-    Repost ad
-
-    Try to delete ad with same title if possible before reposting new ad
-    """
-    [data, _] = get_post_details(args.ad_file)
-    get_username_if_needed(args, data)
-
-    if not api:
-        api = kijiji_api.KijijiApi()
-        api.login(args.username, args.password)
-
-    del_ad_name = ""
-    for item in data:
-        if item == "postAdForm.title":
-            del_ad_name = data[item]
-    try:
-        api.delete_ad_using_title(del_ad_name)
-        print("Existing ad deleted before reposting")
-    except kijiji_api.KijijiApiException:
-        print("Did not find an existing ad with matching title, skipping ad deletion")
-        pass
-
-    # Must wait a bit before posting the same ad even after deleting it, otherwise Kijiji will automatically remove it
-    print("Waiting 3 minutes before posting again. Please do not exit this script.")
-    sleep(180)
-    post_ad(args)
-
-
 def check_ad(args, api=None):
     """
     Check if ad is live
     """
+    print('Checking if ad is alive..')
     [data, _] = get_post_details(args.ad_file)
 
     if not api:
@@ -174,17 +136,6 @@ def check_ad(args, api=None):
 
     all_ads = api.get_all_ads()
     return [ad['title'] for ad in all_ads if ad['title'] == ad_title]
-
-
-def nuke(args, api=None):
-    """
-    Delete all active ads
-    """
-    if not api:
-        api = kijiji_api.KijijiApi()
-        api.login(args.username, args.password)
-    all_ads = api.get_all_ads()
-    [api.delete_ad(ad['id']) for ad in all_ads]
 
 
 def generate_post_file(args):
