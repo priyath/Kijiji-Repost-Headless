@@ -1,0 +1,49 @@
+# not required to change
+postAdForm.galleryImageIndex:
+postAdForm.geocodeLat: 0.0
+postAdForm.geocodeLng: 0.0
+postAdForm.city: 
+postAdForm.province: 
+PostalLat: 
+PostalLng: 
+categoryId: 43
+featuresForm.featurePackage: PKG_BASIC
+featuresForm.topAdDuration: 7
+postAdForm.attributeMap[forrentbyhousing_s]: ownr
+
+# Configure below parameters based on your ad
+
+image_paths: [img01.jpg] #path to image
+postAdForm.adType: OFFER # possible values OFFER or WANTED
+postAdForm.attributeMap[numberbedrooms_s]: 1
+postAdForm.attributeMap[numberbathrooms_s]: 20
+postAdForm.attributeMap[areainfeet_i]: 1222
+postAdForm.attributeMap[furnished_s]: 1 # possible values 1 or 0
+postAdForm.attributeMap[petsallowed_s]: 0 # possible values 1 or 0
+postAdForm.title: House for sale, barely used
+postAdForm.description: This is a beautiful soup ad
+postAdForm.addressStreetNumber: 353
+postAdForm.addressStreetName: Karamada
+postAdForm.addressCity: Gelioya
+postAdForm.addressProvince: AB
+postAdForm.addressPostalCode: T1H 3S7 # Should be a valid postal code for selected province
+postAdForm.mapAddress: Hattiya Muttiya, Kussiya para nambiliya
+postAdForm.priceType: FIXED # possible values FIXED GIVE_AWAY CONTACT SWAP_TRADE
+postAdForm.priceAmount: 1500
+postAdForm.youtubeVideoURL: 
+postAdForm.phoneNumber:
+submitType: saveAndCheckout
+postAdForm.locationId: 1700199
+locationLevel0: 9003
+postAdForm.locationId: 1700234
+locationLevel0: 9003
+postAdForm.locationId: 1700236
+locationLevel0: 9006
+postAdForm.locationId: 1700300
+locationLevel0: 9007
+postAdForm.locationId: 1700205
+locationLevel0: 1700202
+postAdForm.locationId: 1700018
+locationLevel0: 9005
+postAdForm.locationId: 1700192
+locationLevel0: 9006
