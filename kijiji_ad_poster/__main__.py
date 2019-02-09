@@ -32,9 +32,6 @@ def main():
     delete_parser.add_argument('id', type=str, help='id of the ad you wish to delete')
     delete_parser.set_defaults(function=delete_ad)
 
-    build_parser = subparsers.add_parser('build_ad', help='generates the item.yml file for a new ad')
-    build_parser.set_defaults(function=generate_post_file)
-
     args = parser.parse_args()
     try:
         args.function(args)
